@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ushikuns-ai",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-16",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "ushikuns-ai"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "RANK_TRACKING_PROVIDER": "disabled",
+    "GOOGLE_MAPS_IMPORT_PROVIDER": "disabled"
+  }
+}

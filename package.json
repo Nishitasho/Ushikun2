@@ -1,0 +1,37 @@
+{
+  "name": "ushikuns-ai-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "NEXT_TEST_WASM_DIR=$PWD/node_modules/@next/swc-wasm-nodejs next dev --webpack -H 127.0.0.1",
+    "build": "NEXT_TEST_WASM_DIR=$PWD/node_modules/@next/swc-wasm-nodejs next build --webpack",
+    "cf:build": "RANK_TRACKING_PROVIDER=disabled GOOGLE_MAPS_IMPORT_PROVIDER=disabled opennextjs-cloudflare build",
+    "cf:preview": "RANK_TRACKING_PROVIDER=disabled GOOGLE_MAPS_IMPORT_PROVIDER=disabled opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "RANK_TRACKING_PROVIDER=disabled GOOGLE_MAPS_IMPORT_PROVIDER=disabled opennextjs-cloudflare build && opennextjs-cloudflare deploy -- --keep-vars",
+    "cf:upload": "RANK_TRACKING_PROVIDER=disabled GOOGLE_MAPS_IMPORT_PROVIDER=disabled opennextjs-cloudflare build && opennextjs-cloudflare upload -- --keep-vars",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
+    "lucide-react": "^0.556.0",
+    "next": "^16.0.7",
+    "playwright": "^1.60.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@next/swc-wasm-nodejs": "^16.2.7",
+    "@opennextjs/cloudflare": "^1.19.11",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.100.0"
+  }
+}
