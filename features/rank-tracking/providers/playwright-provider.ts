@@ -52,9 +52,10 @@ export class PlaywrightRankProvider implements RankTrackingProvider {
 
   private async getBrowser() {
     if (!this.browser) {
+      const executablePath = process.env.RANK_BROWSER_EXECUTABLE_PATH || undefined;
       this.browser = await chromium.launch({
         headless: process.env.RANK_BROWSER_HEADLESS !== "false",
-        executablePath: process.env.RANK_BROWSER_EXECUTABLE_PATH || DEFAULT_CHROME_PATH
+        ...(executablePath ? { executablePath } : {})
       });
     }
     return this.browser;

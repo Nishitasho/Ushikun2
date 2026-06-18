@@ -175,9 +175,9 @@ export default function SettingsPage() {
         </div>
       </Panel>
 
-      <Panel title="デモデータ">
+      <Panel title="ローカル保存データ">
         <Button variant="secondary" onClick={resetDemo}>
-          <RotateCcw className="size-4" /> 初期状態に戻す
+          <RotateCcw className="size-4" /> ローカルデータを初期化
         </Button>
       </Panel>
     </div>

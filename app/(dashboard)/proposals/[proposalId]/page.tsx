@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Check, Edit3, Send, X } from "lucide-react";
 import { Button, EmptyState, Panel, StatusBadge } from "@/components/ui";
 import { categoryLabels, platformLabels } from "@/features/core/labels";
@@ -12,6 +13,7 @@ export default function ProposalDetailPage() {
   const params = useParams<{ proposalId: string }>();
   const router = useRouter();
   const { state, changeProposalStatus, isReady } = useKuroko();
+  const [isPublishing, setIsPublishing] = useState(false);
   const proposal = state.proposals.find((item) => item.id === params.proposalId);
 
   if (!isReady) {
@@ -31,6 +33,35 @@ export default function ProposalDetailPage() {
   const store = state.stores.find((item) => item.id === proposal.storeId);
   const revisions = state.revisions.filter((item) => item.proposalId === proposal.id);
   const events = state.statusEvents.filter((item) => item.proposalId === proposal.id);
+  const proposalId = proposal.id;
+  const canUseProductionPublish = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    proposalId
+  );
+  const isGbpProposal =
+    proposal.platform === "google_business_profile" &&
+    (proposal.category === "google_business_profile_post" || proposal.category === "gbp_post");
+
+  async function publishProposal() {
+    if (canUseProductionPublish && isGbpProposal) {
+      setIsPublishing(true);
+      try {
+        const response = await fetch("/api/gbp/posts/publish", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ proposalId })
+        });
+        const data = (await response.json()) as { error?: string };
+        if (!response.ok) throw new Error(data.error || "GBP投稿に失敗しました。");
+        changeProposalStatus(proposalId, "posted");
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : "GBP投稿に失敗しました。");
+      } finally {
+        setIsPublishing(false);
+      }
+      return;
+    }
+    changeProposalStatus(proposalId, "posted");
+  }
 
   return (
     <div className="grid gap-6">
@@ -68,11 +99,11 @@ export default function ProposalDetailPage() {
           </Button>
           <Button
             variant="secondary"
-            disabled={proposal.status === "rejected"}
-            onClick={() => changeProposalStatus(proposal.id, "posted")}
+            disabled={isPublishing || proposal.status === "rejected" || proposal.status === "posted"}
+            onClick={publishProposal}
           >
             <Send className="size-4" />
-            投稿済み
+            {isPublishing ? "投稿中" : "投稿する"}
           </Button>
         </div>
       </div>

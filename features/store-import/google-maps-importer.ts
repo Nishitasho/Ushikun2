@@ -145,9 +145,10 @@ export async function importGoogleMapsStore(urlValue: string): Promise<ImportedS
   const sourceUrl = assertGoogleMapsUrl(urlValue);
   let browser: Browser | undefined;
   try {
+    const executablePath = process.env.RANK_BROWSER_EXECUTABLE_PATH || undefined;
     browser = await chromium.launch({
       headless: process.env.RANK_BROWSER_HEADLESS !== "false",
-      executablePath: process.env.RANK_BROWSER_EXECUTABLE_PATH || DEFAULT_CHROME_PATH
+      ...(executablePath ? { executablePath } : {})
     });
     const page = await browser.newPage({
       locale: "ja-JP",

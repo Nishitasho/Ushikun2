@@ -188,7 +188,11 @@ export default function LaunchPage() {
         <Metric label="準備進捗" value={`${readyRate}%`} note={`${completedCount}/${launchItems.length} 完了`} />
         <Metric label="登録店舗" value={state.stores.length} note={`${trackedStores.length}店舗でキーワードあり`} />
         <Metric label="AI提案" value={state.proposals.length} note={`承認/投稿 ${approvedOrPosted.length}件`} />
-        <Metric label="本番連携" value={status?.mode === "configured" ? "一部設定済み" : "未設定"} note="まずはデモで運用確認" />
+        <Metric
+          label="本番連携"
+          value={status?.mode === "configured" ? "接続設定済み" : "未設定"}
+          note="設定画面で接続テストを確認"
+        />
       </div>
 
       <Panel

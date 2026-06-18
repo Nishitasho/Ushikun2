@@ -22,6 +22,14 @@ const storeInputSchema = z.object({
   gbpLocationName: z.string().optional().default("")
 });
 
+const defaultTemplateBodyByRating = {
+  5: "{reviewer_name}様、この度はご来店いただき、温かいお言葉をありがとうございます。次回もご満足いただけるよう準備してお待ちしております。",
+  4: "{reviewer_name}様、ご来店とご評価をありがとうございます。より心地よい時間をお届けできるよう、いただいたお声を日々の改善に活かしてまいります。",
+  3: "{reviewer_name}様、ご来店いただきありがとうございます。さらにご満足いただけるよう、改善点を店舗内で確認してまいります。",
+  2: "{reviewer_name}様、この度はご期待に沿えず申し訳ございません。差し支えなければ、詳細を店舗までお知らせいただけますと幸いです。真摯に確認し改善に努めます。",
+  1: "{reviewer_name}様、ご不快な思いをおかけし申し訳ございません。事実確認のうえ改善に努めますので、恐れ入りますが店舗まで個別にご連絡ください。"
+} as const;
+
 async function getOrCreateDefaultOrganization() {
   const supabase = createSupabaseServerClient();
   if (!supabase) {
@@ -133,6 +141,21 @@ export async function POST(request: Request) {
       if (keywordError) {
         throw new Error(keywordError.message);
       }
+    }
+
+    const { error: templateError } = await supabase.from("review_reply_templates").insert(
+      ([5, 4, 3, 2, 1] as const).map((rating) => ({
+        store_id: store.id,
+        rating,
+        industry: input.industry,
+        template_name: `星${rating} 標準返信`,
+        template_body: defaultTemplateBodyByRating[rating],
+        is_active: true
+      }))
+    );
+
+    if (templateError) {
+      throw new Error(templateError.message);
     }
 
     return NextResponse.json({ store }, { status: 201 });

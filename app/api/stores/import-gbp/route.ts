@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { ImportedStoreDraft } from "@/features/store-import/types";
+import { importGoogleMapsStore } from "@/features/store-import/google-maps-importer";
 
 export const maxDuration = 120;
 
@@ -20,10 +20,6 @@ export async function POST(request: Request) {
       );
     }
     const body = requestSchema.parse(await request.json());
-    const modulePath = "@/features/store-import/" + "google-maps-importer";
-    const { importGoogleMapsStore } = (await import(modulePath)) as {
-      importGoogleMapsStore: (url: string) => Promise<ImportedStoreDraft>;
-    };
     const draft = await importGoogleMapsStore(body.url);
     return NextResponse.json({ draft });
   } catch (error) {

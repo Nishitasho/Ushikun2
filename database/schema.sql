@@ -186,7 +186,39 @@ create table gbp_posts (
   posted_at timestamptz,
   risk_flags text[] not null default '{}',
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (proposal_id)
+);
+
+create table google_accounts (
+  id uuid primary key default gen_random_uuid(),
+  google_account_name text,
+  account_name text,
+  access_token text,
+  refresh_token text,
+  expires_at timestamptz,
+  scopes text[] not null default '{}',
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (google_account_name)
+);
+
+create table store_gbp_locations (
+  id uuid primary key default gen_random_uuid(),
+  google_account_id uuid references google_accounts(id) on delete cascade,
+  store_id uuid references stores(id) on delete set null,
+  google_account_name text not null,
+  account_name text,
+  location_name text not null,
+  title text not null,
+  store_code text,
+  place_id text,
+  address text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (location_name)
 );
 
 create table ranking_batches (
@@ -265,6 +297,8 @@ alter table proposal_status_events enable row level security;
 alter table review_reply_templates enable row level security;
 alter table google_reviews enable row level security;
 alter table gbp_posts enable row level security;
+alter table google_accounts enable row level security;
+alter table store_gbp_locations enable row level security;
 alter table ranking_batches enable row level security;
 alter table ranking_results enable row level security;
 alter table store_metric_snapshots enable row level security;
@@ -348,6 +382,11 @@ create policy "google_reviews_member_access" on google_reviews
 for all using (can_access_store(store_id)) with check (can_access_store(store_id));
 create policy "gbp_posts_member_access" on gbp_posts
 for all using (can_access_store(store_id)) with check (can_access_store(store_id));
+create policy "google_accounts_authenticated_access" on google_accounts
+for all to authenticated using (true) with check (true);
+create policy "store_gbp_locations_member_access" on store_gbp_locations
+for all using (store_id is null or can_access_store(store_id))
+with check (store_id is null or can_access_store(store_id));
 create policy "ranking_batches_member_access" on ranking_batches
 for all using (can_access_store(store_id)) with check (can_access_store(store_id));
 create policy "ranking_results_member_access" on ranking_results

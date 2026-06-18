@@ -35,6 +35,15 @@ GEMINI_API_KEY
 GEMINI_MODEL=gemini-2.5-flash
 RANK_TRACKING_PROVIDER=playwright
 GOOGLE_MAPS_IMPORT_PROVIDER=playwright
+NEXT_PUBLIC_APP_URL=https://YOUR_DOMAIN
+```
+
+GBPの実連携を使う場合:
+
+```text
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+GOOGLE_REDIRECT_URI=https://YOUR_DOMAIN/api/gbp/oauth/callback
 ```
 
 Secretとして扱う値:
@@ -42,6 +51,7 @@ Secretとして扱う値:
 ```text
 SUPABASE_SERVICE_ROLE_KEY
 GEMINI_API_KEY
+GOOGLE_CLIENT_SECRET
 ```
 
 `NEXT_PUBLIC_` が付く値はブラウザにも公開されます。Supabase URL と anon key のみにしてください。
@@ -73,6 +83,14 @@ npm exec vercel deploy --prod
 - Supabase接続テスト
 - Gemini API接続テスト
 - storesテーブル取得テスト
+
+GBP連携を使う場合は、Supabase SQL Editorで追加migrationも実行します。
+
+```text
+database/migrate_add_gbp_connection.sql
+```
+
+その後 `/gbp` を開き、Google認証、ロケーション同期、店舗との紐付け、口コミ取得を順番に確認します。
 
 ## 6. Google Maps順位取得の運用案
 

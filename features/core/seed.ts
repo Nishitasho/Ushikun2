@@ -57,7 +57,7 @@ export function buildDefaultReviewTemplates(store: Store): ReviewReplyTemplate[]
   }));
 }
 
-export const initialState: KurokoState = {
+export const demoState: KurokoState = {
   stores: [demoStore],
   proposals: [],
   revisions: [],
@@ -91,6 +91,20 @@ export const initialState: KurokoState = {
       updatedAt: createdAt
     }
   ],
+  gbpPosts: [],
+  rankBatches: [],
+  rankResults: [],
+  storeMetricSnapshots: [],
+  marketingReports: []
+};
+
+export const initialState: KurokoState = {
+  stores: [],
+  proposals: [],
+  revisions: [],
+  statusEvents: [],
+  reviewTemplates: [],
+  googleReviews: [],
   gbpPosts: [],
   rankBatches: [],
   rankResults: [],
