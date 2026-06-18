@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
 export function GET() {
+  const googleOAuthEnv = {
+    googleClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
+    googleClientSecret: Boolean(process.env.GOOGLE_CLIENT_SECRET),
+    googleRedirectUri: Boolean(process.env.GOOGLE_REDIRECT_URI)
+  };
   const credentials = {
     supabase: Boolean(
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -9,9 +14,9 @@ export function GET() {
     ),
     gemini: Boolean(process.env.GEMINI_API_KEY),
     googleBusinessProfile: Boolean(
-      process.env.GOOGLE_CLIENT_ID &&
-        process.env.GOOGLE_CLIENT_SECRET &&
-        process.env.GOOGLE_REDIRECT_URI
+      googleOAuthEnv.googleClientId &&
+        googleOAuthEnv.googleClientSecret &&
+        googleOAuthEnv.googleRedirectUri
     ),
     rankTracking: process.env.RANK_TRACKING_PROVIDER !== "disabled"
   };
@@ -21,6 +26,7 @@ export function GET() {
       credentials.supabase || credentials.gemini || credentials.googleBusinessProfile
         ? "configured"
         : "demo",
-    credentials
+    credentials,
+    googleOAuthEnv
   });
 }
