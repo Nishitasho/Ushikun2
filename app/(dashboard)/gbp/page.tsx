@@ -64,6 +64,17 @@ export default function GbpPage() {
   }
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    const connected = params.get("connected");
+    const accountFetch = params.get("accountFetch");
+    if (error) {
+      setMessage(decodeURIComponent(error));
+    } else if (connected && accountFetch === "failed") {
+      setMessage("Google OAuth連携は保存しました。GBPアカウント一覧は取得できていないため、API権限や対象アカウントの管理権限を確認してください。");
+    } else if (connected) {
+      setMessage("Google OAuth連携を保存しました。");
+    }
     loadStatus().catch((error) => setMessage(error instanceof Error ? error.message : "GBP状況の取得に失敗しました。"));
   }, []);
 

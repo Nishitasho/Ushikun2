@@ -9,7 +9,10 @@ export async function GET() {
   }
 
   const [accounts, locations, stores] = await Promise.all([
-    supabase.from("google_accounts").select("id,google_account_name,account_name,is_active,created_at").order("created_at", { ascending: false }),
+    supabase
+      .from("google_accounts")
+      .select("id,google_account_name,account_name,is_active,created_at,access_token,refresh_token,expires_at,scopes")
+      .order("created_at", { ascending: false }),
     supabase.from("store_gbp_locations").select("*").order("created_at", { ascending: false }),
     supabase.from("stores").select("id,name,gbp_account_name,gbp_location_name").is("deleted_at", null).order("created_at", { ascending: false })
   ]);
@@ -32,7 +35,19 @@ export async function GET() {
   return NextResponse.json({
     configured: isGbpConfigured(),
     setupRequired: false,
-    accounts: accounts.data || [],
+    accounts: (accounts.data || []).map((account) => ({
+      id: account.id,
+      google_account_name: account.google_account_name,
+      account_name: account.account_name,
+      is_active: account.is_active,
+      created_at: account.created_at,
+      token_state: {
+        accessToken: Boolean(account.access_token),
+        refreshToken: Boolean(account.refresh_token),
+        expiresAt: Boolean(account.expires_at),
+        scopesCount: Array.isArray(account.scopes) ? account.scopes.length : 0
+      }
+    })),
     locations: locations.data || [],
     stores: stores.data || []
   });
